@@ -8,7 +8,7 @@ const _geist = Geist({ subsets: ['latin'] })
 const _geistMono = Geist_Mono({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Thurga Rajinathan | Full Stack Developer & CS Undergrad',
+  title: 'Thurga Rajinathan',
   description:
     'Computer Engineering undergraduate at University of Ruhuna. Full-stack developer specialising in Angular, React, Spring Boot, and modern web technologies. Seeking internship opportunities.',
   generator: 'next.js',
