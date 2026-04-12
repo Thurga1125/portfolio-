@@ -1,16 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import fs from 'fs'
-import path from 'path'
+import Redis from 'ioredis'
 
-const FILE = path.join(process.cwd(), 'data', 'messages.json')
-
-function readMessages() {
-  try {
-    return JSON.parse(fs.readFileSync(FILE, 'utf-8'))
-  } catch {
-    return []
-  }
-}
+const redis = new Redis(process.env.REDIS_URL!)
 
 export async function POST(req: NextRequest) {
   const { name, email, subject, message } = await req.json()
@@ -29,9 +20,10 @@ export async function POST(req: NextRequest) {
     read: false,
   }
 
-  const all = readMessages()
-  all.unshift(entry)
-  fs.writeFileSync(FILE, JSON.stringify(all, null, 2))
+  const raw = await redis.get('messages')
+  const existing = raw ? JSON.parse(raw) : []
+  existing.unshift(entry)
+  await redis.set('messages', JSON.stringify(existing))
 
   return NextResponse.json({ ok: true })
 }

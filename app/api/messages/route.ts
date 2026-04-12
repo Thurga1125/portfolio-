@@ -1,27 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
-import fs from 'fs'
-import path from 'path'
+import Redis from 'ioredis'
 
-const FILE = path.join(process.cwd(), 'data', 'messages.json')
+const redis = new Redis(process.env.REDIS_URL!)
+
 const PASS = process.env.ADMIN_PASSWORD || 'thurga2001'
 
-function readMessages() {
-  try {
-    return JSON.parse(fs.readFileSync(FILE, 'utf-8'))
-  } catch {
-    return []
-  }
+type Message = {
+  id: number
+  name: string
+  email: string
+  subject: string
+  message: string
+  date: string
+  read: boolean
 }
 
-function writeMessages(data: unknown) {
-  fs.writeFileSync(FILE, JSON.stringify(data, null, 2))
+async function readMessages(): Promise<Message[]> {
+  const raw = await redis.get('messages')
+  return raw ? JSON.parse(raw) : []
 }
 
 /* GET — fetch all messages (password required) */
 export async function GET(req: NextRequest) {
   const pwd = req.nextUrl.searchParams.get('pwd')
   if (pwd !== PASS) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  return NextResponse.json(readMessages())
+  return NextResponse.json(await readMessages())
 }
 
 /* PATCH — mark a message as read */
@@ -30,10 +33,10 @@ export async function PATCH(req: NextRequest) {
   if (pwd !== PASS) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { id } = await req.json()
-  const all = readMessages()
-  const msg = all.find((m: { id: number }) => m.id === id)
+  const all = await readMessages()
+  const msg = all.find(m => m.id === id)
   if (msg) msg.read = true
-  writeMessages(all)
+  await redis.set('messages', JSON.stringify(all))
   return NextResponse.json({ ok: true })
 }
 
@@ -43,7 +46,7 @@ export async function DELETE(req: NextRequest) {
   if (pwd !== PASS) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { id } = await req.json()
-  const all = readMessages().filter((m: { id: number }) => m.id !== id)
-  writeMessages(all)
+  const all = (await readMessages()).filter(m => m.id !== id)
+  await redis.set('messages', JSON.stringify(all))
   return NextResponse.json({ ok: true })
 }
