@@ -224,6 +224,78 @@ function ProfilePhoto3D() {
   )
 }
 
+/* ─── Floating avatar nav ────────────────────────────────────────────────────── */
+const SECTION_LABELS: Record<string, string> = {
+  home: 'Home', about: 'About', projects: 'Projects',
+  skills: 'Skills', experience: 'Experience', contact: 'Contact',
+}
+
+function FloatingAvatarNav({ activeSection, scrollTo }: { activeSection: string; scrollTo: (id: string) => void }) {
+  const sections = ['home', 'about', 'projects', 'skills', 'experience', 'contact']
+  const activeIdx = Math.max(0, sections.indexOf(activeSection))
+  const DOT_H = 56
+
+  return (
+    <div className="fixed right-6 top-1/2 -translate-y-1/2 z-40 hidden lg:block select-none">
+      <div className="relative" style={{ height: sections.length * DOT_H }}>
+
+        {/* Track line */}
+        <div
+          className="absolute left-1/2 -translate-x-1/2 w-px rounded-full"
+          style={{
+            top: DOT_H / 2,
+            height: (sections.length - 1) * DOT_H,
+            background: 'linear-gradient(to bottom, rgba(139,92,246,0.2), rgba(236,72,153,0.2), rgba(59,130,246,0.2))',
+          }}
+        />
+
+        {/* Sliding avatar */}
+        <div
+          className="absolute left-1/2 z-10 transition-all duration-500"
+          style={{
+            top: activeIdx * DOT_H + DOT_H / 2,
+            transform: 'translate(-50%, -50%)',
+            transitionTimingFunction: 'cubic-bezier(0.34,1.56,0.64,1)',
+          }}
+        >
+          {/* Glow pulse */}
+          <div className="absolute inset-0 rounded-full bg-violet-500/30 blur-md scale-[2] animate-pulse pointer-events-none" />
+          <img
+            src="/thurga-photo.jpeg"
+            alt="Thurga"
+            className="relative w-9 h-9 rounded-full object-cover ring-2 ring-violet-500 shadow-lg shadow-violet-500/50"
+          />
+          {/* Section tooltip above avatar */}
+          <div className="absolute right-12 top-1/2 -translate-y-1/2 pointer-events-none">
+            <span className="text-[11px] font-semibold text-violet-500 whitespace-nowrap bg-background/80 backdrop-blur-sm border border-violet-500/30 rounded-full px-2.5 py-1 shadow-sm">
+              {SECTION_LABELS[activeSection]}
+            </span>
+          </div>
+        </div>
+
+        {/* Dots */}
+        {sections.map((section, i) => (
+          <button
+            key={section}
+            onClick={() => scrollTo(section)}
+            className="absolute left-1/2 -translate-x-1/2 group flex items-center justify-center"
+            style={{ top: i * DOT_H, height: DOT_H, width: 24 }}
+            aria-label={section}
+          >
+            <div
+              className={`rounded-full transition-all duration-300
+                ${activeSection === section
+                  ? 'w-2 h-2 bg-violet-500 scale-[1.6] shadow-md shadow-violet-500/50'
+                  : 'w-1.5 h-1.5 bg-foreground/20 group-hover:bg-violet-400 group-hover:scale-125'
+                }`}
+            />
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 /* ─── Scroll reveal ──────────────────────────────────────────────────────────── */
 function Reveal({ children, delay = 0 }: { children: ReactNode; delay?: number }) {
   const ref = useRef<HTMLDivElement>(null)
@@ -864,6 +936,8 @@ export default function Portfolio() {
           </div>
         </div>
       </section>
+
+      <FloatingAvatarNav activeSection={activeSection} scrollTo={scrollTo} />
 
       {/* ── FOOTER ── */}
       <footer className="border-t border-border/40 py-8 px-4">
