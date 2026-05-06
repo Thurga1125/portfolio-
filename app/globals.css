@@ -175,6 +175,50 @@
   transform: translateY(0);
 }
 
+/* ── Doll Navigator ── */
+@keyframes doll-float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33%       { transform: translateY(-6px) rotate(0.6deg); }
+  66%       { transform: translateY(-3px) rotate(-0.4deg); }
+}
+@keyframes doll-shadow-float {
+  0%, 100% { transform: translateX(-50%) scaleX(1);    opacity: 0.35; }
+  50%       { transform: translateX(-50%) scaleX(0.6); opacity: 0.1;  }
+}
+@keyframes doll-blink {
+  0%, 88%, 100% { transform: scaleY(1); }
+  93%           { transform: scaleY(0.08); }
+}
+@keyframes doll-walk-l {
+  0%, 100% { transform: rotate(-22deg); }
+  50%      { transform: rotate(22deg);  }
+}
+@keyframes doll-walk-r {
+  0%, 100% { transform: rotate(22deg);  }
+  50%      { transform: rotate(-22deg); }
+}
+@keyframes doll-arm-l {
+  0%, 100% { transform: rotate(18deg);  }
+  50%      { transform: rotate(-18deg); }
+}
+@keyframes doll-arm-r {
+  0%, 100% { transform: rotate(-18deg); }
+  50%      { transform: rotate(18deg);  }
+}
+@keyframes station-ping {
+  0%   { transform: scale(1);   opacity: 0.7; }
+  100% { transform: scale(2.4); opacity: 0;   }
+}
+@keyframes rail-glow {
+  0%, 100% { opacity: 0.5; }
+  50%      { opacity: 1;   }
+}
+.doll-eye {
+  animation: doll-blink 5s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
 /* ── 3-D Profile Photo ── */
 @keyframes spin-conic {
   to { transform: rotate(360deg); }

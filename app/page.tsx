@@ -224,73 +224,185 @@ function ProfilePhoto3D() {
   )
 }
 
-/* ─── Floating avatar nav ────────────────────────────────────────────────────── */
-const SECTION_LABELS: Record<string, string> = {
-  home: 'Home', about: 'About', projects: 'Projects',
-  skills: 'Skills', experience: 'Experience', contact: 'Contact',
+/* ─── Doll navigator ─────────────────────────────────────────────────────────── */
+const DOLL_SECTIONS = ['home', 'about', 'projects', 'skills', 'experience', 'contact']
+const DOLL_META: Record<string, { label: string; emoji: string }> = {
+  home:       { label: 'Home',       emoji: '🏠' },
+  about:      { label: 'About',      emoji: '👩‍💻' },
+  projects:   { label: 'Projects',   emoji: '🚀' },
+  skills:     { label: 'Skills',     emoji: '⚡' },
+  experience: { label: 'Experience', emoji: '🎯' },
+  contact:    { label: 'Contact',    emoji: '✉️' },
 }
 
-function FloatingAvatarNav({ activeSection, scrollTo }: { activeSection: string; scrollTo: (id: string) => void }) {
-  const sections = ['home', 'about', 'projects', 'skills', 'experience', 'contact']
-  const activeIdx = Math.max(0, sections.indexOf(activeSection))
-  const DOT_H = 56
+function DollCharacter({ isMoving }: { isMoving: boolean }) {
+  const legStyle = (phase: 'l' | 'r') =>
+    isMoving
+      ? { animation: `doll-walk-${phase} 0.42s ease-in-out infinite`, transformBox: 'fill-box' as const, transformOrigin: 'top center' }
+      : { transformBox: 'fill-box' as const, transformOrigin: 'top center' }
+  const armStyle = (phase: 'l' | 'r') =>
+    isMoving
+      ? { animation: `doll-arm-${phase} 0.42s ease-in-out infinite`, transformBox: 'fill-box' as const, transformOrigin: 'top center' }
+      : { transformBox: 'fill-box' as const, transformOrigin: 'top center' }
 
   return (
-    <div className="fixed right-6 top-1/2 -translate-y-1/2 z-40 hidden lg:block select-none">
-      <div className="relative" style={{ height: sections.length * DOT_H }}>
+    <div className="relative" style={{
+      animation: isMoving ? 'none' : 'doll-float 3.2s ease-in-out infinite',
+      filter: 'drop-shadow(0 10px 18px rgba(139,92,246,0.5)) drop-shadow(0 4px 8px rgba(0,0,0,0.2))',
+    }}>
+      {/* Ground shadow */}
+      <div className="absolute left-1/2 bottom-[-6px] w-9 h-2.5 rounded-full bg-violet-500/30 blur-sm pointer-events-none"
+        style={{ transform: 'translateX(-50%)', animation: 'doll-shadow-float 3.2s ease-in-out infinite' }} />
 
-        {/* Track line */}
-        <div
-          className="absolute left-1/2 -translate-x-1/2 w-px rounded-full"
-          style={{
-            top: DOT_H / 2,
-            height: (sections.length - 1) * DOT_H,
-            background: 'linear-gradient(to bottom, rgba(139,92,246,0.2), rgba(236,72,153,0.2), rgba(59,130,246,0.2))',
-          }}
-        />
+      <svg width="54" height="74" viewBox="0 0 64 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+        {/* Hair back */}
+        <ellipse cx="32" cy="20" rx="17" ry="15" fill="#120600" />
+        {/* Head */}
+        <circle cx="32" cy="23" r="14" fill="#F0A07A" />
+        {/* Hair top/front */}
+        <path d="M18 20 Q19 5 32 4 Q45 5 46 20 Q43 12 32 11 Q21 12 18 20Z" fill="#120600" />
+        {/* Hair side strands */}
+        <path d="M18 20 Q14 29 16 38" stroke="#120600" strokeWidth="5" strokeLinecap="round" fill="none" />
+        <path d="M46 20 Q50 29 48 38" stroke="#120600" strokeWidth="5" strokeLinecap="round" fill="none" />
+        {/* Ears */}
+        <circle cx="18" cy="24" r="3" fill="#D98060" />
+        <circle cx="46" cy="24" r="3" fill="#D98060" />
+        {/* Eyebrows */}
+        <path d="M22 17 Q27 15 31 17" stroke="#120600" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+        <path d="M33 17 Q38 15 42 17" stroke="#120600" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+        {/* Eyes (blinking via CSS) */}
+        <ellipse cx="27" cy="23" rx="3.5" ry="3.5" fill="#120600" className="doll-eye" />
+        <ellipse cx="37" cy="23" rx="3.5" ry="3.5" fill="#120600" className="doll-eye" />
+        {/* Eye shine */}
+        <circle cx="28.5" cy="21.5" r="1.3" fill="white" />
+        <circle cx="38.5" cy="21.5" r="1.3" fill="white" />
+        {/* Blush */}
+        <ellipse cx="21" cy="28" rx="4" ry="2.5" fill="#FFB0B0" opacity="0.55" />
+        <ellipse cx="43" cy="28" rx="4" ry="2.5" fill="#FFB0B0" opacity="0.55" />
+        {/* Nose */}
+        <path d="M30 27 Q32 29 34 27" stroke="#C07050" strokeWidth="1.2" strokeLinecap="round" fill="none" />
+        {/* Smile */}
+        <path d="M27 32 Q32 37 37 32" stroke="#120600" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+        {/* Neck */}
+        <rect x="28" y="37" width="8" height="6" rx="2" fill="#F0A07A" />
+        {/* Body / dress */}
+        <path d="M17 43 Q32 39 47 43 L49 70 Q32 74 15 70 Z" fill="url(#dg)" />
+        {/* V collar */}
+        <path d="M24 43 L32 51 L40 43" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+        {/* Waist shimmer */}
+        <path d="M17 58 Q32 62 47 58" stroke="rgba(255,255,255,0.18)" strokeWidth="2" fill="none" strokeLinecap="round" />
+        {/* Left arm */}
+        <path d="M18 46 Q9 55 11 63" stroke="#F0A07A" strokeWidth="6" strokeLinecap="round" fill="none" style={armStyle('l')} />
+        <circle cx="11" cy="63" r="3.5" fill="#F0A07A" />
+        {/* Right arm */}
+        <path d="M46 46 Q55 55 53 63" stroke="#F0A07A" strokeWidth="6" strokeLinecap="round" fill="none" style={armStyle('r')} />
+        <circle cx="53" cy="63" r="3.5" fill="#F0A07A" />
+        {/* Left leg */}
+        <rect x="20" y="69" width="10" height="15" rx="5" fill="#7C3AED" style={legStyle('l')} />
+        {/* Right leg */}
+        <rect x="34" y="69" width="10" height="15" rx="5" fill="#6D28D9" style={legStyle('r')} />
+        {/* Left foot */}
+        <ellipse cx="25" cy="84" rx="7" ry="4" fill="#5B21B6" />
+        {/* Right foot */}
+        <ellipse cx="39" cy="84" rx="7" ry="4" fill="#4C1D95" />
+        <defs>
+          <linearGradient id="dg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stopColor="#8B5CF6" />
+            <stop offset="55%"  stopColor="#A855F7" />
+            <stop offset="100%" stopColor="#EC4899" />
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  )
+}
 
-        {/* Sliding avatar */}
-        <div
-          className="absolute left-1/2 z-10 transition-all duration-500"
-          style={{
-            top: activeIdx * DOT_H + DOT_H / 2,
-            transform: 'translate(-50%, -50%)',
-            transitionTimingFunction: 'cubic-bezier(0.34,1.56,0.64,1)',
-          }}
-        >
-          {/* Glow pulse */}
-          <div className="absolute inset-0 rounded-full bg-violet-500/30 blur-md scale-[2] animate-pulse pointer-events-none" />
-          <img
-            src="/thurga-photo.jpeg"
-            alt="Thurga"
-            className="relative w-9 h-9 rounded-full object-cover ring-2 ring-violet-500 shadow-lg shadow-violet-500/50"
-          />
-          {/* Section tooltip above avatar */}
-          <div className="absolute right-12 top-1/2 -translate-y-1/2 pointer-events-none">
-            <span className="text-[11px] font-semibold text-violet-500 whitespace-nowrap bg-background/80 backdrop-blur-sm border border-violet-500/30 rounded-full px-2.5 py-1 shadow-sm">
-              {SECTION_LABELS[activeSection]}
+function DollNavigator({ activeSection, scrollTo }: { activeSection: string; scrollTo: (id: string) => void }) {
+  const activeIdx   = Math.max(0, DOLL_SECTIONS.indexOf(activeSection))
+  const [isMoving, setIsMoving] = useState(false)
+  const prevIdx     = useRef(activeIdx)
+  const DOT_H       = 82
+
+  useEffect(() => {
+    if (prevIdx.current !== activeIdx) {
+      setIsMoving(true)
+      prevIdx.current = activeIdx
+      const t = setTimeout(() => setIsMoving(false), 750)
+      return () => clearTimeout(t)
+    }
+  }, [activeIdx])
+
+  const trackTop    = DOT_H / 2
+  const trackHeight = (DOLL_SECTIONS.length - 1) * DOT_H
+  const dollTop     = activeIdx * DOT_H + 4
+
+  return (
+    <div className="fixed right-5 top-1/2 -translate-y-1/2 z-40 hidden xl:block select-none"
+      style={{ height: DOLL_SECTIONS.length * DOT_H }}>
+
+      {/* ── Rail tube ── */}
+      <div className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
+        style={{ top: trackTop, height: trackHeight, width: 4, borderRadius: 8,
+          background: 'linear-gradient(to bottom,rgba(139,92,246,0.7),rgba(168,85,247,0.7),rgba(236,72,153,0.7),rgba(59,130,246,0.6))',
+          boxShadow: '0 0 8px rgba(139,92,246,0.5),0 0 20px rgba(139,92,246,0.2)',
+          animation: 'rail-glow 3s ease-in-out infinite',
+        }} />
+      {/* Rail highlight (3-D cylinder illusion) */}
+      <div className="absolute pointer-events-none"
+        style={{ left: 'calc(50% - 3px)', top: trackTop, height: trackHeight, width: 1, borderRadius: 8,
+          background: 'linear-gradient(to bottom,rgba(255,255,255,0.5),rgba(255,255,255,0.2),rgba(255,255,255,0.4))',
+        }} />
+      {/* Rail ambient glow blur */}
+      <div className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
+        style={{ top: trackTop, height: trackHeight, width: 12, borderRadius: 8,
+          background: 'linear-gradient(to bottom,rgba(139,92,246,0.15),rgba(236,72,153,0.15),rgba(59,130,246,0.12))',
+          filter: 'blur(6px)',
+        }} />
+
+      {/* ── Section stop dots ── */}
+      {DOLL_SECTIONS.map((section, i) => (
+        <button key={section} onClick={() => scrollTo(section)}
+          aria-label={section}
+          className="absolute left-1/2 -translate-x-1/2 group flex items-center justify-center"
+          style={{ top: i * DOT_H + DOT_H / 2 - 12, width: 24, height: 24 }}>
+          {/* Ping ring for active */}
+          {activeSection === section && (
+            <span className="absolute inset-0 m-auto w-4 h-4 rounded-full bg-violet-400/50 pointer-events-none"
+              style={{ animation: 'station-ping 1.4s ease-out infinite' }} />
+          )}
+          <div className={`w-3 h-3 rounded-full transition-all duration-300 relative z-10
+            ${activeSection === section
+              ? 'bg-violet-500 scale-125 shadow-lg shadow-violet-500/60'
+              : 'bg-foreground/25 group-hover:bg-violet-400 group-hover:scale-110'}`} />
+        </button>
+      ))}
+
+      {/* ── The doll (slides along rail) ── */}
+      <div className="absolute left-1/2 z-20 transition-all"
+        style={{
+          top: dollTop,
+          transform: 'translateX(-50%)',
+          transitionDuration: '650ms',
+          transitionTimingFunction: 'cubic-bezier(0.34,1.56,0.64,1)',
+        }}>
+        <DollCharacter isMoving={isMoving} />
+
+        {/* Speech bubble */}
+        <div className="absolute right-[62px] top-4 pointer-events-none transition-all duration-300"
+          style={{ opacity: isMoving ? 0.4 : 1, transform: isMoving ? 'translateX(6px) scale(0.95)' : 'translateX(0) scale(1)' }}>
+          <div className="relative flex items-center gap-1.5 bg-background/90 backdrop-blur-md border border-violet-500/35
+            rounded-2xl px-3 py-1.5 shadow-xl"
+            style={{ boxShadow: '0 4px 24px rgba(139,92,246,0.25), 0 1px 4px rgba(0,0,0,0.1)' }}>
+            <span className="text-sm leading-none">{DOLL_META[activeSection]?.emoji}</span>
+            <span className="text-[11px] font-bold text-violet-500 whitespace-nowrap tracking-wide">
+              {DOLL_META[activeSection]?.label}
             </span>
+            {/* Arrow → */}
+            <span className="absolute -right-[7px] top-1/2 -translate-y-1/2 w-3 h-3 rounded-sm
+              bg-background/90 border-r border-t border-violet-500/35"
+              style={{ transform: 'translateY(-50%) rotate(45deg)' }} />
           </div>
         </div>
-
-        {/* Dots */}
-        {sections.map((section, i) => (
-          <button
-            key={section}
-            onClick={() => scrollTo(section)}
-            className="absolute left-1/2 -translate-x-1/2 group flex items-center justify-center"
-            style={{ top: i * DOT_H, height: DOT_H, width: 24 }}
-            aria-label={section}
-          >
-            <div
-              className={`rounded-full transition-all duration-300
-                ${activeSection === section
-                  ? 'w-2 h-2 bg-violet-500 scale-[1.6] shadow-md shadow-violet-500/50'
-                  : 'w-1.5 h-1.5 bg-foreground/20 group-hover:bg-violet-400 group-hover:scale-125'
-                }`}
-            />
-          </button>
-        ))}
       </div>
     </div>
   )
@@ -937,7 +1049,7 @@ export default function Portfolio() {
         </div>
       </section>
 
-      <FloatingAvatarNav activeSection={activeSection} scrollTo={scrollTo} />
+      <DollNavigator activeSection={activeSection} scrollTo={scrollTo} />
 
       {/* ── FOOTER ── */}
       <footer className="border-t border-border/40 py-8 px-4">
