@@ -224,189 +224,6 @@ function ProfilePhoto3D() {
   )
 }
 
-/* ─── Doll navigator ─────────────────────────────────────────────────────────── */
-const DOLL_SECTIONS = ['home', 'about', 'projects', 'skills', 'experience', 'contact']
-const DOLL_META: Record<string, { label: string; emoji: string }> = {
-  home:       { label: 'Home',       emoji: '🏠' },
-  about:      { label: 'About',      emoji: '👩‍💻' },
-  projects:   { label: 'Projects',   emoji: '🚀' },
-  skills:     { label: 'Skills',     emoji: '⚡' },
-  experience: { label: 'Experience', emoji: '🎯' },
-  contact:    { label: 'Contact',    emoji: '✉️' },
-}
-
-function DollCharacter({ isMoving }: { isMoving: boolean }) {
-  const legStyle = (phase: 'l' | 'r') =>
-    isMoving
-      ? { animation: `doll-walk-${phase} 0.42s ease-in-out infinite`, transformBox: 'fill-box' as const, transformOrigin: 'top center' }
-      : { transformBox: 'fill-box' as const, transformOrigin: 'top center' }
-  const armStyle = (phase: 'l' | 'r') =>
-    isMoving
-      ? { animation: `doll-arm-${phase} 0.42s ease-in-out infinite`, transformBox: 'fill-box' as const, transformOrigin: 'top center' }
-      : { transformBox: 'fill-box' as const, transformOrigin: 'top center' }
-
-  return (
-    <div className="relative" style={{
-      animation: isMoving ? 'none' : 'doll-float 3.2s ease-in-out infinite',
-      filter: 'drop-shadow(0 10px 18px rgba(139,92,246,0.5)) drop-shadow(0 4px 8px rgba(0,0,0,0.2))',
-    }}>
-      {/* Ground shadow */}
-      <div className="absolute left-1/2 bottom-[-6px] w-9 h-2.5 rounded-full bg-violet-500/30 blur-sm pointer-events-none"
-        style={{ transform: 'translateX(-50%)', animation: 'doll-shadow-float 3.2s ease-in-out infinite' }} />
-
-      <svg width="54" height="74" viewBox="0 0 64 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-        {/* Hair back */}
-        <ellipse cx="32" cy="20" rx="17" ry="15" fill="#120600" />
-        {/* Head */}
-        <circle cx="32" cy="23" r="14" fill="#F0A07A" />
-        {/* Hair top/front */}
-        <path d="M18 20 Q19 5 32 4 Q45 5 46 20 Q43 12 32 11 Q21 12 18 20Z" fill="#120600" />
-        {/* Hair side strands */}
-        <path d="M18 20 Q14 29 16 38" stroke="#120600" strokeWidth="5" strokeLinecap="round" fill="none" />
-        <path d="M46 20 Q50 29 48 38" stroke="#120600" strokeWidth="5" strokeLinecap="round" fill="none" />
-        {/* Ears */}
-        <circle cx="18" cy="24" r="3" fill="#D98060" />
-        <circle cx="46" cy="24" r="3" fill="#D98060" />
-        {/* Eyebrows */}
-        <path d="M22 17 Q27 15 31 17" stroke="#120600" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-        <path d="M33 17 Q38 15 42 17" stroke="#120600" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-        {/* Eyes (blinking via CSS) */}
-        <ellipse cx="27" cy="23" rx="3.5" ry="3.5" fill="#120600" className="doll-eye" />
-        <ellipse cx="37" cy="23" rx="3.5" ry="3.5" fill="#120600" className="doll-eye" />
-        {/* Eye shine */}
-        <circle cx="28.5" cy="21.5" r="1.3" fill="white" />
-        <circle cx="38.5" cy="21.5" r="1.3" fill="white" />
-        {/* Blush */}
-        <ellipse cx="21" cy="28" rx="4" ry="2.5" fill="#FFB0B0" opacity="0.55" />
-        <ellipse cx="43" cy="28" rx="4" ry="2.5" fill="#FFB0B0" opacity="0.55" />
-        {/* Nose */}
-        <path d="M30 27 Q32 29 34 27" stroke="#C07050" strokeWidth="1.2" strokeLinecap="round" fill="none" />
-        {/* Smile */}
-        <path d="M27 32 Q32 37 37 32" stroke="#120600" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-        {/* Neck */}
-        <rect x="28" y="37" width="8" height="6" rx="2" fill="#F0A07A" />
-        {/* Body / dress */}
-        <path d="M17 43 Q32 39 47 43 L49 70 Q32 74 15 70 Z" fill="url(#dg)" />
-        {/* V collar */}
-        <path d="M24 43 L32 51 L40 43" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-        {/* Waist shimmer */}
-        <path d="M17 58 Q32 62 47 58" stroke="rgba(255,255,255,0.18)" strokeWidth="2" fill="none" strokeLinecap="round" />
-        {/* Left arm */}
-        <path d="M18 46 Q9 55 11 63" stroke="#F0A07A" strokeWidth="6" strokeLinecap="round" fill="none" style={armStyle('l')} />
-        <circle cx="11" cy="63" r="3.5" fill="#F0A07A" />
-        {/* Right arm */}
-        <path d="M46 46 Q55 55 53 63" stroke="#F0A07A" strokeWidth="6" strokeLinecap="round" fill="none" style={armStyle('r')} />
-        <circle cx="53" cy="63" r="3.5" fill="#F0A07A" />
-        {/* Left leg */}
-        <rect x="20" y="69" width="10" height="15" rx="5" fill="#7C3AED" style={legStyle('l')} />
-        {/* Right leg */}
-        <rect x="34" y="69" width="10" height="15" rx="5" fill="#6D28D9" style={legStyle('r')} />
-        {/* Left foot */}
-        <ellipse cx="25" cy="84" rx="7" ry="4" fill="#5B21B6" />
-        {/* Right foot */}
-        <ellipse cx="39" cy="84" rx="7" ry="4" fill="#4C1D95" />
-        <defs>
-          <linearGradient id="dg" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stopColor="#8B5CF6" />
-            <stop offset="55%"  stopColor="#A855F7" />
-            <stop offset="100%" stopColor="#EC4899" />
-          </linearGradient>
-        </defs>
-      </svg>
-    </div>
-  )
-}
-
-function DollNavigator({ activeSection, scrollTo }: { activeSection: string; scrollTo: (id: string) => void }) {
-  const activeIdx   = Math.max(0, DOLL_SECTIONS.indexOf(activeSection))
-  const [isMoving, setIsMoving] = useState(false)
-  const prevIdx     = useRef(activeIdx)
-  const DOT_H       = 82
-
-  useEffect(() => {
-    if (prevIdx.current !== activeIdx) {
-      setIsMoving(true)
-      prevIdx.current = activeIdx
-      const t = setTimeout(() => setIsMoving(false), 750)
-      return () => clearTimeout(t)
-    }
-  }, [activeIdx])
-
-  const trackTop    = DOT_H / 2
-  const trackHeight = (DOLL_SECTIONS.length - 1) * DOT_H
-  const dollTop     = activeIdx * DOT_H + 4
-
-  return (
-    <div className="fixed right-5 top-1/2 -translate-y-1/2 z-40 hidden xl:block select-none"
-      style={{ height: DOLL_SECTIONS.length * DOT_H }}>
-
-      {/* ── Rail tube ── */}
-      <div className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
-        style={{ top: trackTop, height: trackHeight, width: 4, borderRadius: 8,
-          background: 'linear-gradient(to bottom,rgba(139,92,246,0.7),rgba(168,85,247,0.7),rgba(236,72,153,0.7),rgba(59,130,246,0.6))',
-          boxShadow: '0 0 8px rgba(139,92,246,0.5),0 0 20px rgba(139,92,246,0.2)',
-          animation: 'rail-glow 3s ease-in-out infinite',
-        }} />
-      {/* Rail highlight (3-D cylinder illusion) */}
-      <div className="absolute pointer-events-none"
-        style={{ left: 'calc(50% - 3px)', top: trackTop, height: trackHeight, width: 1, borderRadius: 8,
-          background: 'linear-gradient(to bottom,rgba(255,255,255,0.5),rgba(255,255,255,0.2),rgba(255,255,255,0.4))',
-        }} />
-      {/* Rail ambient glow blur */}
-      <div className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
-        style={{ top: trackTop, height: trackHeight, width: 12, borderRadius: 8,
-          background: 'linear-gradient(to bottom,rgba(139,92,246,0.15),rgba(236,72,153,0.15),rgba(59,130,246,0.12))',
-          filter: 'blur(6px)',
-        }} />
-
-      {/* ── Section stop dots ── */}
-      {DOLL_SECTIONS.map((section, i) => (
-        <button key={section} onClick={() => scrollTo(section)}
-          aria-label={section}
-          className="absolute left-1/2 -translate-x-1/2 group flex items-center justify-center"
-          style={{ top: i * DOT_H + DOT_H / 2 - 12, width: 24, height: 24 }}>
-          {/* Ping ring for active */}
-          {activeSection === section && (
-            <span className="absolute inset-0 m-auto w-4 h-4 rounded-full bg-violet-400/50 pointer-events-none"
-              style={{ animation: 'station-ping 1.4s ease-out infinite' }} />
-          )}
-          <div className={`w-3 h-3 rounded-full transition-all duration-300 relative z-10
-            ${activeSection === section
-              ? 'bg-violet-500 scale-125 shadow-lg shadow-violet-500/60'
-              : 'bg-foreground/25 group-hover:bg-violet-400 group-hover:scale-110'}`} />
-        </button>
-      ))}
-
-      {/* ── The doll (slides along rail) ── */}
-      <div className="absolute left-1/2 z-20 transition-all"
-        style={{
-          top: dollTop,
-          transform: 'translateX(-50%)',
-          transitionDuration: '650ms',
-          transitionTimingFunction: 'cubic-bezier(0.34,1.56,0.64,1)',
-        }}>
-        <DollCharacter isMoving={isMoving} />
-
-        {/* Speech bubble */}
-        <div className="absolute right-[62px] top-4 pointer-events-none transition-all duration-300"
-          style={{ opacity: isMoving ? 0.4 : 1, transform: isMoving ? 'translateX(6px) scale(0.95)' : 'translateX(0) scale(1)' }}>
-          <div className="relative flex items-center gap-1.5 bg-background/90 backdrop-blur-md border border-violet-500/35
-            rounded-2xl px-3 py-1.5 shadow-xl"
-            style={{ boxShadow: '0 4px 24px rgba(139,92,246,0.25), 0 1px 4px rgba(0,0,0,0.1)' }}>
-            <span className="text-sm leading-none">{DOLL_META[activeSection]?.emoji}</span>
-            <span className="text-[11px] font-bold text-violet-500 whitespace-nowrap tracking-wide">
-              {DOLL_META[activeSection]?.label}
-            </span>
-            {/* Arrow → */}
-            <span className="absolute -right-[7px] top-1/2 -translate-y-1/2 w-3 h-3 rounded-sm
-              bg-background/90 border-r border-t border-violet-500/35"
-              style={{ transform: 'translateY(-50%) rotate(45deg)' }} />
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 /* ─── Scroll reveal ──────────────────────────────────────────────────────────── */
 function Reveal({ children, delay = 0 }: { children: ReactNode; delay?: number }) {
@@ -443,44 +260,23 @@ type Project = {
 }
 
 const FEATURED_PROJECTS: Project[] = [
-    {
-    title: 'Bibliometric Data Collection',
-    description: 'Group project focused on collecting and analysing academic publication data with a systematic, collaborative approach.',
-    tech: ['Data Collection', 'Analysis', 'Collaboration'],
-    link: 'https://github.com/Thurga1125/Software-Group-Project-Bibliometric-Data-Collection',
-    features: ['Data aggregation', 'Analysis tools', 'Reporting'],
-    gradient: 'from-orange-500/15 to-amber-600/15',
-    glow: 'hover:shadow-orange-500/20',
+  {
+    title: 'TrafficPay LK — Digital Traffic Fine System',
+    description: 'Digital traffic fine payment and monitoring system built for the Sri Lanka Police Department, streamlining fine issuance, payment tracking, and officer management.',
+    tech: ['React', 'Spring Boot', 'MySQL', 'JWT'],
+    link: 'https://github.com/Thurga1125/trafficpay-lk',
+    features: ['Fine management', 'Payment gateway', 'Officer portal'],
+    gradient: 'from-red-500/15 to-orange-600/15',
+    glow: 'hover:shadow-red-500/20',
   },
   {
-    title: 'Movie Ticket Booking System',
-    description: 'Online movie ticket booking platform with seat selection, booking management, show scheduling, and an admin panel for theatre management.',
-    tech: ['React', 'Spring Boot', 'MySQL', 'JWT'],
-    link: 'https://github.com/Thurga1125/movie-booking-system',
-    features: ['Seat selection', 'Booking management', 'Admin panel'],
+    title: 'Movie Ticket Booking with TDD/BDD & CI/CD',
+    description: 'Cinema ticket booking platform built with a test-driven approach — full TDD/BDD test suite and automated CI/CD pipeline for continuous delivery.',
+    tech: ['React', 'Spring Boot', 'MySQL', 'JUnit', 'CI/CD'],
+    link: 'https://github.com/Thurga1125/Movie-ticket-Booking-with-testing',
+    features: ['TDD/BDD tests', 'CI/CD pipeline', 'Seat selection'],
     gradient: 'from-blue-500/15 to-indigo-600/15',
     glow: 'hover:shadow-blue-500/20',
-  },
-  {
-    title: 'Doctor Channeling System - DevOps',
-    description: 'Healthcare appointment booking platform enabling patients to channel doctors, manage appointments, and track consultation history.',
-    tech: ['React', 'Node.js', 'MongoDB', 'Express'],
-    link: 'https://github.com/Thurga1125/doctor-channeling-system',
-    features: ['Appointment booking', 'Doctor profiles', 'Patient records'],
-    gradient: 'from-emerald-500/15 to-teal-600/15',
-    glow: 'hover:shadow-emerald-500/20',
-  },
-]
-
-const MORE_PROJECTS: Project[] = [
-    {
-    title: 'Barista Cafe Management System',
-    description: 'Full-stack cafe management system with real-time order tracking, admin dashboard, and complete menu management.',
-    tech: ['Angular 17', 'Spring Boot', 'MongoDB', 'JWT'],
-    link: 'https://github.com/Thurga1125/Cafe-Management-System--Angular',
-    features: ['Customer ordering', 'Admin dashboard', 'Real-time status'],
-    gradient: 'from-violet-500/15 to-purple-600/15',
-    glow: 'hover:shadow-violet-500/20',
   },
   {
     title: 'FeedPulse — AI Feedback Platform',
@@ -491,42 +287,90 @@ const MORE_PROJECTS: Project[] = [
     gradient: 'from-pink-500/15 to-rose-600/15',
     glow: 'hover:shadow-pink-500/20',
   },
+]
+
+const MORE_PROJECTS: Project[] = [
   {
-  title: 'Customer Churn Prediction System',
-  description: 'Machine learning project to predict customer churn using data analysis, feature engineering, and classification models for business insights.',
-  tech: ['Python', 'Scikit-learn', 'Pandas', 'NumPy', 'Jupyter'],
-  link: 'https://github.com/Thurga1125/Customer-Churn-Prediction-ML-project',
-  features: ['Churn prediction model', 'Data preprocessing', 'Model evaluation'],
-  gradient: 'from-blue-500/15 to-cyan-600/15',
-  glow: 'hover:shadow-blue-500/20',
-},
-{
-  title: 'OptiGrade - Answer Sheet Checker',
-  description: 'Computer vision-based system for automated answer sheet evaluation using image processing and intelligent grading techniques.',
-  tech: ['Python', 'OpenCV', 'Machine Learning', 'NumPy'],
-  link: 'https://github.com/Thurga1125/OptiGrade-Computer-Vision-Based-Answer-Sheet-Checker',
-  features: ['Answer sheet detection', 'Automated grading', 'Image processing'],
-  gradient: 'from-green-500/15 to-emerald-600/15',
-  glow: 'hover:shadow-green-500/20',
-},
-{
-  title: 'Task Manager Full-Stack App',
-  description: 'Full-stack task management application with user authentication, task tracking, and CRUD operations for productivity management.',
-  tech: ['Angular', 'Spring Boot', 'MySQL', 'JWT'],
-  link: 'https://github.com/Thurga1125/Task-Manager-Fullstack',
-  features: ['Task CRUD operations', 'User authentication', 'Dashboard view'],
-  gradient: 'from-orange-500/15 to-red-600/15',
-  glow: 'hover:shadow-orange-500/20',
-},
-{
-  title: 'BOC Mobile Application',
-  description: 'Mobile banking application prototype designed for seamless financial transactions, account management, and user-friendly experience.',
-  tech: ['Flutter', 'Dart', 'Firebase'],
-  link: 'https://github.com/Thurga1125/Mobile_Application_BOC',
-  features: ['Account management', 'Transaction interface', 'Mobile UI design'],
-  gradient: 'from-pink-500/15 to-rose-600/15',
-  glow: 'hover:shadow-pink-500/20',
-},
+    title: 'Stock Price Prediction (LSTM)',
+    description: 'AI mini project using Long Short-Term Memory neural networks to predict stock prices from historical data with time-series analysis.',
+    tech: ['Python', 'TensorFlow', 'LSTM', 'Pandas', 'Matplotlib'],
+    link: 'https://github.com/Thurga1125/Stock-Price-Prediction',
+    features: ['LSTM model', 'Time-series analysis', 'Price forecasting'],
+    gradient: 'from-cyan-500/15 to-blue-600/15',
+    glow: 'hover:shadow-cyan-500/20',
+  },
+  {
+    title: 'zen-greenpulse — Wellness Platform',
+    description: 'Wellness web platform built for the BotCalm Code Night competition, combining mindfulness and fitness tools for busy people.',
+    tech: ['React', 'Node.js', 'MongoDB'],
+    link: 'https://github.com/Thurga1125/zen-greenpulse',
+    features: ['Mindfulness tools', 'Fitness tracker', 'Wellness dashboard'],
+    gradient: 'from-green-500/15 to-teal-600/15',
+    glow: 'hover:shadow-green-500/20',
+  },
+  {
+    title: 'Barista Cafe Management System',
+    description: 'Full-stack cafe management system with real-time order tracking, admin dashboard, and complete menu management.',
+    tech: ['Angular 17', 'Spring Boot', 'MongoDB', 'JWT'],
+    link: 'https://github.com/Thurga1125/Cafe-Management-System--Angular',
+    features: ['Customer ordering', 'Admin dashboard', 'Real-time status'],
+    gradient: 'from-violet-500/15 to-purple-600/15',
+    glow: 'hover:shadow-violet-500/20',
+  },
+  {
+    title: 'Doctor Channeling System - DevOps',
+    description: 'Healthcare appointment booking platform enabling patients to channel doctors, manage appointments, and track consultation history.',
+    tech: ['React', 'Node.js', 'MongoDB', 'Docker'],
+    link: 'https://github.com/Thurga1125/Docter-channeling-_-Devops',
+    features: ['Appointment booking', 'Doctor profiles', 'Patient records'],
+    gradient: 'from-emerald-500/15 to-teal-600/15',
+    glow: 'hover:shadow-emerald-500/20',
+  },
+  {
+    title: 'Customer Churn Prediction System',
+    description: 'Machine learning project to predict customer churn using data analysis, feature engineering, and classification models for business insights.',
+    tech: ['Python', 'Scikit-learn', 'Pandas', 'NumPy', 'Jupyter'],
+    link: 'https://github.com/Thurga1125/Customer-Churn-Prediction-ML-project',
+    features: ['Churn prediction model', 'Data preprocessing', 'Model evaluation'],
+    gradient: 'from-blue-500/15 to-cyan-600/15',
+    glow: 'hover:shadow-blue-500/20',
+  },
+  {
+    title: 'OptiGrade — Answer Sheet Checker',
+    description: 'Computer vision-based system for automated MCQ answer sheet evaluation using image processing and intelligent grading techniques.',
+    tech: ['Python', 'OpenCV', 'Machine Learning', 'NumPy'],
+    link: 'https://github.com/Thurga1125/OptiGrade-Computer-Vision-Based-Answer-Sheet-Checker',
+    features: ['Answer sheet detection', 'Automated grading', 'Image processing'],
+    gradient: 'from-green-500/15 to-emerald-600/15',
+    glow: 'hover:shadow-green-500/20',
+  },
+  {
+    title: 'Task Manager Full-Stack App',
+    description: 'Full-stack task management application with user authentication, task tracking, and CRUD operations for productivity management.',
+    tech: ['Angular', 'Spring Boot', 'MySQL', 'JWT'],
+    link: 'https://github.com/Thurga1125/Task-Manager-Fullstack',
+    features: ['Task CRUD operations', 'User authentication', 'Dashboard view'],
+    gradient: 'from-orange-500/15 to-red-600/15',
+    glow: 'hover:shadow-orange-500/20',
+  },
+  {
+    title: 'BOC Mobile Banking App',
+    description: 'Modern, secure mobile banking app built with React, featuring BOC\'s golden branding, fast 24/7 access to banking services and account management.',
+    tech: ['React', 'Firebase', 'Mobile UI'],
+    link: 'https://github.com/Thurga1125/Mobile-application--BOC-bank-app',
+    features: ['Account management', 'Transaction interface', 'Mobile UI design'],
+    gradient: 'from-yellow-500/15 to-amber-600/15',
+    glow: 'hover:shadow-yellow-500/20',
+  },
+  {
+    title: 'Bibliometric Data Collection',
+    description: 'Group project focused on collecting and analysing academic publication data with a systematic, collaborative approach.',
+    tech: ['Data Collection', 'Analysis', 'Collaboration'],
+    link: 'https://github.com/Thurga1125/Software-Group-Project-Bibliometric-Data-Collection',
+    features: ['Data aggregation', 'Analysis tools', 'Reporting'],
+    gradient: 'from-orange-500/15 to-amber-600/15',
+    glow: 'hover:shadow-orange-500/20',
+  },
 ]
 
 const SKILLS = [
@@ -538,10 +382,11 @@ const SKILLS = [
 ]
 
 const EXPERIENCE = [
-  { role: 'Full Stack Web Developer', company: 'Freelance',                              period: 'Sep 2024 – Present', description: 'Building full-stack applications and gaining hands-on experience with modern web technologies.',                 grad: 'from-violet-500 to-purple-600' },
-  { role: 'Program Lead',             company: 'IEEE Student Branch — Univ. of Ruhuna',  period: 'Mar 2025 – Present', description: 'Leading projects and coordinating technical initiatives for the IEEE community.',                           grad: 'from-blue-500 to-cyan-600' },
-  { role: 'Secretariat Team Lead',    company: 'Xtreme 19.0',                            period: 'Aug 2025 – Present', description: 'Managing team operations and coordination for large-scale technical events.',                               grad: 'from-pink-500 to-rose-600' },
-  { role: 'Member',                   company: 'Eminence 5.0 — IEEE WIE',                period: 'Aug 2025 – Present', description: 'Active member of Women in Engineering society, promoting diversity in tech.',                               grad: 'from-orange-500 to-amber-600' },
+  { role: 'Intern Software Engineer',  company: 'BotCalm Pvt Ltd',                        period: 'Jun 2026 – Present', description: 'Working as an intern software engineer, contributing to real-world product development and collaborating with an experienced engineering team.',  grad: 'from-emerald-500 to-teal-600' },
+  { role: 'Full Stack Web Developer',  company: 'Freelance',                              period: 'Sep 2024 – Present', description: 'Building full-stack applications and gaining hands-on experience with modern web technologies.',                                                   grad: 'from-violet-500 to-purple-600' },
+  { role: 'Program Lead',              company: 'IEEE Student Branch — Univ. of Ruhuna',  period: 'Mar 2025 – Present', description: 'Leading projects and coordinating technical initiatives for the IEEE community.',                                                               grad: 'from-blue-500 to-cyan-600' },
+  { role: 'Secretariat Team Lead',     company: 'Xtreme 19.0',                            period: 'Aug 2025 – Present', description: 'Managing team operations and coordination for large-scale technical events.',                                                                   grad: 'from-pink-500 to-rose-600' },
+  { role: 'Member',                    company: 'Eminence 5.0 — IEEE WIE',                period: 'Aug 2025 – Present', description: 'Active member of Women in Engineering society, promoting diversity in tech.',                                                                   grad: 'from-orange-500 to-amber-600' },
 ]
 
 /* ─── Shared project card ────────────────────────────────────────────────────── */
@@ -704,9 +549,9 @@ export default function Portfolio() {
           </div>
 
           <div className="mb-8">
-            <span className="pulse-badge inline-flex items-center gap-2 bg-violet-500/15 text-violet-500 border border-violet-500/35 rounded-full px-4 py-1.5 text-sm font-medium backdrop-blur-sm">
-              <span className="w-2 h-2 rounded-full bg-violet-400 animate-pulse" />
-              Available for Internship
+            <span className="pulse-badge inline-flex items-center gap-2 bg-emerald-500/15 text-emerald-500 border border-emerald-500/35 rounded-full px-4 py-1.5 text-sm font-medium backdrop-blur-sm">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              Intern Software Engineer @ BotCalm Pvt Ltd
             </span>
           </div>
 
@@ -765,7 +610,7 @@ export default function Portfolio() {
               <div className="space-y-5 text-foreground/65 leading-relaxed text-[1.05rem]">
                 <p>I&apos;m a passionate Computer Engineering undergraduate at the <strong className="text-foreground">University of Ruhuna</strong>, Sri Lanka, with a deep love for software development,DevOps engineering,AI/ML engineering , and creative UI/UX designing.</p>
                 <p>Over the past years I&apos;ve built experience through diverse full-stack projects, leadership roles within the <strong className="text-violet-500">IEEE Student Branch</strong>, and active participation in real world projects.</p>
-                <p>Currently sharpening my backend skills with <strong className="text-pink-500">Java</strong>, and my creative edge with <strong className="text-pink-500">Angular and React</strong> and Figma. Seeking an internship to apply my skills in a real-world environment.</p>
+                <p>Currently working as an <strong className="text-emerald-500">Intern Software Engineer at BotCalm Pvt Ltd</strong>, applying my skills in a real-world engineering environment while continuing to grow with <strong className="text-pink-500">Java</strong>, <strong className="text-pink-500">Angular</strong>, <strong className="text-pink-500">React</strong>, and Figma.</p>
               </div>
             </Reveal>
             <div className="space-y-4">
@@ -790,6 +635,7 @@ export default function Portfolio() {
                       <h3 className="font-bold text-lg">Current Roles</h3>
                     </div>
                     <ul className="space-y-1.5 text-foreground/60 text-sm">
+                      <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />Intern Software Engineer — BotCalm Pvt Ltd</li>
                       <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-violet-500 flex-shrink-0" />Program Lead — IEEE Student Branch</li>
                       <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-pink-500 flex-shrink-0" />Secretariat Lead — Xtreme 19.0</li>
                       <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0" />Member — IEEE WIE &amp; SEDS</li>
@@ -817,7 +663,7 @@ export default function Portfolio() {
 
           {/* Hidden extra projects */}
           {showMore && (
-            <div className="grid md:grid-cols-2 gap-6 mt-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
               {MORE_PROJECTS.map((p, i) => (
                 <Reveal key={i} delay={i * 100}><ProjectCard p={p} /></Reveal>
               ))}
@@ -913,7 +759,7 @@ export default function Portfolio() {
                   Let&apos;s Work Together
                 </h2>
                 <p className="text-foreground/55 text-lg mb-8 max-w-lg mx-auto leading-relaxed">
-                  Actively seeking internship opportunities. Looking for a motivated full-stack developer? Let&apos;s connect!
+                  Currently interning at BotCalm Pvt Ltd and open to collaborations, freelance projects, and exciting engineering opportunities. Let&apos;s connect!
                 </p>
                 <div className="flex flex-wrap gap-4 justify-center">
                   <a href="mailto:thurga11252001@gmail.com">
@@ -928,7 +774,7 @@ export default function Portfolio() {
                   </a>
                 </div>
                 <p className="mt-6 text-xs text-foreground/25 tracking-widest uppercase">
-                  Available for: Internships · Freelance · Collaboration
+                  Open to: Freelance · Collaboration · Full-time roles
                 </p>
               </div>
             </div>
@@ -955,7 +801,7 @@ export default function Portfolio() {
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">Connect.</span>
                   </h3>
                   <p className="text-foreground/45 text-sm mb-8 leading-relaxed">
-                    Open to collaborations, internships, and conversations about AI, design, and engineering.
+                    Open to collaborations, freelance work, and conversations about AI, design, and engineering.
                   </p>
 
                   {formStatus === 'sent' ? (
@@ -1048,8 +894,6 @@ export default function Portfolio() {
           </div>
         </div>
       </section>
-
-      <DollNavigator activeSection={activeSection} scrollTo={scrollTo} />
 
       {/* ── FOOTER ── */}
       <footer className="border-t border-border/40 py-8 px-4">
