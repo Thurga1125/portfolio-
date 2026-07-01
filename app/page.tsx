@@ -226,17 +226,20 @@ function ProfilePhoto3D() {
 
 
 /* ─── Scroll reveal ──────────────────────────────────────────────────────────── */
-function Reveal({ children, delay = 0 }: { children: ReactNode; delay?: number }) {
+type RevealType = 'slide' | 'flipx' | 'flipy' | 'zoom' | 'left' | 'right'
+
+function Reveal({ children, delay = 0, type = 'slide' }: { children: ReactNode; delay?: number; type?: RevealType }) {
   const ref = useRef<HTMLDivElement>(null)
+  const cls = type === 'slide' ? 'reveal' : `reveal-${type}`
   useEffect(() => {
     const el = ref.current; if (!el) return
-    el.classList.add('reveal')
+    el.classList.add(cls)
     const obs = new IntersectionObserver(
       ([e]) => { if (e.isIntersecting) { el.style.transitionDelay = `${delay}ms`; el.classList.add('visible'); obs.unobserve(el) } },
       { threshold: 0.12 },
     )
     obs.observe(el); return () => obs.disconnect()
-  }, [delay])
+  }, [delay, cls])
   return <div ref={ref}>{children}</div>
 }
 
@@ -658,11 +661,18 @@ export default function Portfolio() {
       {/* ══════════════════════════════════════════════════════════════
           ABOUT
       ═════════════════════════════════════════════════════════════ */}
-      <section id="about" className="py-28 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto">
+      <section id="about" className="py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        {/* Floating 3-D geometry — About */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <div className="geo-cube"    style={{ top: '10%',  right: '4%',  animationDelay: '0s' }} />
+          <div className="geo-cube-sm" style={{ bottom: '18%', left: '2%', animationDelay: '-3s' }} />
+          <div className="geo-ring-3d" style={{ width: 68, height: 68, top: '40%', right: '10%', animationDelay: '-5s' }} />
+          <div className="geo-diamond" style={{ top: '65%', right: '3%', animationDelay: '-2s' }} />
+        </div>
+        <div className="max-w-5xl mx-auto relative z-10">
           <Reveal><SectionHeader title="About Me" sub="Who I am" /></Reveal>
           <div className="grid md:grid-cols-2 gap-12 items-start">
-            <Reveal delay={100}>
+            <Reveal delay={100} type="flipx">
               <div className="space-y-5 text-foreground/65 leading-relaxed text-[1.05rem]">
                 <p>I&apos;m a passionate Computer Engineering undergraduate at the <strong className="text-foreground">University of Ruhuna</strong>, Sri Lanka, with a deep love for software development,DevOps engineering,AI/ML engineering , and creative UI/UX designing.</p>
                 <p>Over the past years I&apos;ve built experience through diverse full-stack projects, leadership roles within the <strong className="text-violet-500">IEEE Student Branch</strong>, and active participation in real world projects.</p>
@@ -670,7 +680,7 @@ export default function Portfolio() {
               </div>
             </Reveal>
             <div className="space-y-4">
-              <Reveal delay={150}>
+              <Reveal delay={150} type="left">
                 <TiltCard>
                   <Card className="p-6 bg-gradient-to-br from-violet-500/10 to-purple-600/10 border-violet-500/20 hover:shadow-xl hover:shadow-violet-500/10 transition-all duration-300">
                     <div className="flex items-center gap-3 mb-4">
@@ -683,7 +693,7 @@ export default function Portfolio() {
                   </Card>
                 </TiltCard>
               </Reveal>
-              <Reveal delay={200}>
+              <Reveal delay={200} type="right">
                 <TiltCard>
                   <Card className="p-6 bg-gradient-to-br from-pink-500/10 to-rose-600/10 border-pink-500/20 hover:shadow-xl hover:shadow-pink-500/10 transition-all duration-300">
                     <div className="flex items-center gap-3 mb-4">
@@ -707,13 +717,20 @@ export default function Portfolio() {
       {/* ══════════════════════════════════════════════════════════════
           PROJECTS
       ═════════════════════════════════════════════════════════════ */}
-      <section id="projects" className="py-28 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
+      <section id="projects" className="py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        {/* Floating 3-D geometry — Projects */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <div className="geo-diamond" style={{ top: '6%',  right: '3%',  animationDelay: '0s' }} />
+          <div className="geo-hex"     style={{ bottom: '10%', left: '2%', animationDelay: '-4s' }} />
+          <div className="geo-cube-sm" style={{ top: '50%', right: '5%',  animationDelay: '-2s' }} />
+          <div className="geo-ring-3d" style={{ width: 52, height: 52, bottom: '28%', right: '10%', animationDelay: '-6s' }} />
+        </div>
+        <div className="max-w-6xl mx-auto relative z-10">
           <Reveal><SectionHeader title="Featured Projects" sub="Things I've built" /></Reveal>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {FEATURED_PROJECTS.map((p, i) => (
-              <Reveal key={i} delay={i * 100}><ProjectCard p={p} /></Reveal>
+              <Reveal key={i} delay={i * 100} type="zoom"><ProjectCard p={p} /></Reveal>
             ))}
           </div>
 
@@ -721,7 +738,7 @@ export default function Portfolio() {
           {showMore && (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
               {MORE_PROJECTS.map((p, i) => (
-                <Reveal key={i} delay={i * 100}><ProjectCard p={p} /></Reveal>
+                <Reveal key={i} delay={i * 80} type="zoom"><ProjectCard p={p} /></Reveal>
               ))}
             </div>
           )}
@@ -742,12 +759,20 @@ export default function Portfolio() {
       {/* ══════════════════════════════════════════════════════════════
           SKILLS
       ═════════════════════════════════════════════════════════════ */}
-      <section id="skills" className="py-28 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto">
+      <section id="skills" className="py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        {/* Floating 3-D geometry — Skills */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <div className="geo-hex"     style={{ top: '8%',  left: '3%',  animationDelay: '0s' }} />
+          <div className="geo-hex"     style={{ top: '35%', right: '3%', animationDelay: '-3s', width: 28, height: 32 }} />
+          <div className="geo-cube"    style={{ bottom: '12%', right: '4%', animationDelay: '-6s' }} />
+          <div className="geo-ring-3d" style={{ width: 80, height: 80, bottom: '30%', left: '2%', animationDelay: '-2s' }} />
+          <div className="geo-diamond" style={{ top: '60%', left: '6%', animationDelay: '-5s' }} />
+        </div>
+        <div className="max-w-5xl mx-auto relative z-10">
           <Reveal><SectionHeader title="Skills & Tech" sub="My toolkit" /></Reveal>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {SKILLS.map((s, i) => (
-              <Reveal key={s.cat} delay={i * 80}>
+              <Reveal key={s.cat} delay={i * 80} type="flipy">
                 <TiltCard className="h-full">
                   <Card className="p-6 border-border/50 hover:border-violet-500/30 hover:shadow-lg hover:shadow-violet-500/10 transition-all duration-300 h-full dark:bg-card/60 backdrop-blur-sm">
                     <div className="flex items-center gap-3 mb-4">
@@ -772,14 +797,21 @@ export default function Portfolio() {
       {/* ══════════════════════════════════════════════════════════════
           EXPERIENCE
       ═════════════════════════════════════════════════════════════ */}
-      <section id="experience" className="py-28 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
+      <section id="experience" className="py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        {/* Floating 3-D geometry — Experience */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <div className="geo-cube"    style={{ top: '8%',  right: '4%',  animationDelay: '-1s' }} />
+          <div className="geo-ring-3d" style={{ width: 60, height: 60, top: '45%', right: '7%', animationDelay: '-4s' }} />
+          <div className="geo-cube-sm" style={{ bottom: '15%', right: '3%', animationDelay: '-7s' }} />
+          <div className="geo-diamond" style={{ top: '25%', right: '12%', animationDelay: '-3s' }} />
+        </div>
+        <div className="max-w-4xl mx-auto relative z-10">
           <Reveal><SectionHeader title="Experience & Roles" sub="My journey" /></Reveal>
           <div className="relative">
             <div className="absolute left-5 top-2 bottom-2 w-px bg-gradient-to-b from-violet-500 via-pink-500 to-blue-400 opacity-25" />
             <div className="space-y-5 pl-14">
               {EXPERIENCE.map((exp, i) => (
-                <Reveal key={i} delay={i * 100}>
+                <Reveal key={i} delay={i * 100} type="left">
                   <TiltCard>
                     <Card className="p-6 border-border/50 hover:border-violet-500/30 hover:shadow-lg hover:shadow-violet-500/10 transition-all duration-300 relative dark:bg-card/60 backdrop-blur-sm">
                       <div className={`absolute -left-[37px] top-6 w-4 h-4 rounded-full bg-gradient-to-br ${exp.grad} ring-2 ring-background shadow-lg`} />
@@ -841,14 +873,22 @@ export default function Portfolio() {
       {/* ══════════════════════════════════════════════════════════════
           CONTACT  —  form + quick links
       ═════════════════════════════════════════════════════════════ */}
-      <section id="contact" className="py-28 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto">
+      <section id="contact" className="py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        {/* Floating 3-D geometry — Contact */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <div className="geo-ring-3d" style={{ width: 90, height: 90, top: '6%',  left: '3%',  animationDelay: '0s' }} />
+          <div className="geo-diamond" style={{ top: '30%', left: '5%',  animationDelay: '-2s' }} />
+          <div className="geo-cube"    style={{ bottom: '12%', left: '3%', animationDelay: '-5s' }} />
+          <div className="geo-hex"     style={{ top: '12%', right: '4%', animationDelay: '-3s' }} />
+          <div className="geo-cube-sm" style={{ bottom: '25%', right: '5%', animationDelay: '-6s' }} />
+        </div>
+        <div className="max-w-5xl mx-auto relative z-10">
           <Reveal><SectionHeader title="Get in Touch" sub="Let's connect" /></Reveal>
 
           <div className="grid lg:grid-cols-2 gap-10 items-start">
 
             {/* ── Contact form ── */}
-            <Reveal delay={80}>
+            <Reveal delay={80} type="left">
               <div className="grid-bg rounded-3xl border border-border/50 dark:border-border/40 overflow-hidden">
                 <div className="bg-background/70 dark:bg-background/40 backdrop-blur-sm p-8 sm:p-10 h-full">
                   <p className="text-xs font-semibold text-blue-400 uppercase tracking-[0.25em] mb-2">Get in Touch</p>
@@ -926,7 +966,7 @@ export default function Portfolio() {
                 { Icon: Linkedin, label: 'LinkedIn', value: 'Thurga Rajinathan',             sub: "Let's connect professionally",  href: 'https://www.linkedin.com/in/thurgarajinathan25/',         grad: 'from-blue-600 to-cyan-600' },
                 { Icon: Mail,     label: 'Email',    value: 'thurga11252001@gmail.com',  sub: 'Drop me a line anytime',        href: 'mailto:thurga11252001@gmail.com',                    grad: 'from-violet-600 to-pink-600' },
               ].map(({ Icon, label, value, sub, href, grad }, i) => (
-                <Reveal key={label} delay={i * 100}>
+                <Reveal key={label} delay={i * 100} type="right">
                   <a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer">
                     <TiltCard>
                       <Card className="p-5 border-border/50 hover:border-violet-500/30 hover:shadow-lg hover:shadow-violet-500/10 transition-all duration-300 cursor-pointer group dark:bg-card/60 backdrop-blur-sm">
